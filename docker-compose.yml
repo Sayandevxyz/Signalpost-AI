@@ -1,0 +1,16 @@
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://signalpost:signalpost@postgres:5432/signalpost
+      REDIS_URL: redis://redis:6379/0
+    depends_on: [postgres, redis]
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: signalpost
+      POSTGRES_PASSWORD: signalpost
+      POSTGRES_DB: signalpost
+  redis:
+    image: redis:7-alpine

@@ -1,0 +1,12 @@
+[project]
+name = "signalpost-ai"
+version = "0.1.0"
+description = "Evidence-first company intelligence for Norwegian businesses."
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
