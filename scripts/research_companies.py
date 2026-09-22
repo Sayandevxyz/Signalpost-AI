@@ -81,14 +81,21 @@ async def run(
                     return number, profile, attempt
                 except Exception as exc:  # noqa: BLE001 - isolate failures per company
                     if attempt == 2:
-                        profile = {"company": {"company_number": number}, "facts": [], "events": [], "research": {"status": "failed", "errors": [str(exc)]}}
+                        profile = {
+                            "company": {"company_number": number},
+                            "facts": [],
+                            "events": [],
+                            "research": {"status": "failed", "errors": [str(exc)]},
+                        }
                         collector.record(profile, time.perf_counter() - started, attempt)
                         return number, profile, attempt
                     await asyncio.sleep(0.25 * (2**attempt))
         raise RuntimeError("unreachable")
 
     results = await asyncio.gather(*(research(number) for number in queue))
-    lines = [json.dumps(profile, default=str, ensure_ascii=False) + "\n" for _, profile, _ in results]
+    lines = [
+        json.dumps(profile, default=str, ensure_ascii=False) + "\n" for _, profile, _ in results
+    ]
 
     def append_lines() -> None:
         with output_file.open("a", encoding="utf-8") as handle:
@@ -97,7 +104,11 @@ async def run(
     await asyncio.to_thread(append_lines)
     elapsed = time.perf_counter() - benchmark_started
     metrics = collector.as_dict(len(numbers), elapsed, bool(done), 1 if queue else 0)
-    existing_profiles = [json.loads(line) for line in output_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+    existing_profiles = [
+        json.loads(line)
+        for line in output_file.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     metrics["quality"] = quality_metrics(existing_profiles)
     if metrics_output:
         metrics_path = Path(metrics_output)

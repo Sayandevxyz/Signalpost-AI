@@ -92,7 +92,8 @@ The current default source set is intentionally offline and conservative. Live r
 
 - The canonical dataset contains organization numbers from the official Enhetsregisteret export; it is not a claim that every entity is a commercial company.
 - The exact 1,000-company benchmark completed with 1,000 records, 84 verified facts, and 916 zero-fact records. Zero-fact records are retained research runs and are not described as successful fact extraction.
-- Checkpointing and resume were exercised. Latency, throughput, request counts, LLM call counts, and cost metrics were unavailable for this offline benchmark artifact.
+- Benchmark instrumentation supports latency, throughput, request, retry, timeout, rate-limit, checkpoint, LLM and cost metrics. Metrics unavailable from the selected execution configuration are reported as unavailable rather than inferred.
+- LLM/token/cost metrics were not applicable to this run because the no-LLM configuration was used. Latency and request metrics were not captured for this existing benchmark artifact and are reported as unavailable.
 - Live external source availability can affect downstream facts and evidence coverage.
 - When sources fail or do not support a claim, Signalpost keeps the value absent/partial rather than fabricating it.
 - Docker configuration is provided. Docker runtime validation could not be performed in the available environment because Docker was not installed.

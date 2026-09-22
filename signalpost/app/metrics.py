@@ -62,26 +62,81 @@ class MetricsCollector:
             else:
                 self.other_failures += 1
 
-    def as_dict(self, requested: int, elapsed_seconds: float, resumed: bool, checkpoints: int) -> dict[str, Any]:
+    def as_dict(
+        self, requested: int, elapsed_seconds: float, resumed: bool, checkpoints: int
+    ) -> dict[str, Any]:
         values = self.latencies
         average = sum(values) / len(values) if values else None
         return {
-            "benchmark": {"requested": requested, "processed": self.processed, "complete": self.complete, "partial": self.partial, "failed": self.failed},
-            "latency": {"elapsed_seconds": elapsed_seconds, "average_seconds": average, "p50_seconds": percentile(values, 50), "p95_seconds": percentile(values, 95), "p99_seconds": percentile(values, 99), "min_seconds": min(values) if values else None, "max_seconds": max(values) if values else None},
-            "throughput": {"companies_per_second": self.processed / elapsed_seconds if elapsed_seconds > 0 else None, "companies_per_minute": self.processed * 60 / elapsed_seconds if elapsed_seconds > 0 else None},
-            "requests": {"total": self.requests, "per_company": self.requests / self.processed if self.processed else None, "by_source": {}},
-            "llm": {"calls": self.llm_calls, "calls_per_company": self.llm_calls / self.processed if self.processed else None, "provider": self.provider, "model": self.model, "tokens": None, "tokens_available": False},
+            "benchmark": {
+                "requested": requested,
+                "processed": self.processed,
+                "complete": self.complete,
+                "partial": self.partial,
+                "failed": self.failed,
+            },
+            "latency": {
+                "elapsed_seconds": elapsed_seconds,
+                "average_seconds": average,
+                "p50_seconds": percentile(values, 50),
+                "p95_seconds": percentile(values, 95),
+                "p99_seconds": percentile(values, 99),
+                "min_seconds": min(values) if values else None,
+                "max_seconds": max(values) if values else None,
+            },
+            "throughput": {
+                "companies_per_second": self.processed / elapsed_seconds
+                if elapsed_seconds > 0
+                else None,
+                "companies_per_minute": self.processed * 60 / elapsed_seconds
+                if elapsed_seconds > 0
+                else None,
+            },
+            "requests": {
+                "total": self.requests,
+                "per_company": self.requests / self.processed if self.processed else None,
+                "by_source": {},
+            },
+            "llm": {
+                "calls": self.llm_calls,
+                "calls_per_company": self.llm_calls / self.processed if self.processed else None,
+                "provider": self.provider,
+                "model": self.model,
+                "tokens": None,
+                "tokens_available": False,
+            },
             "cost": {"amount": None, "currency": None, "available": False},
-            "errors": {"retries": self.retries, "timeouts": self.timeouts, "rate_limits": self.rate_limits, "http_errors": self.http_errors, "connection_errors": self.connection_errors, "other_failures": self.other_failures},
-            "checkpoint": {"enabled": True, "resumed": resumed, "checkpoints": checkpoints, "initial_records": requested, "resumed_records": requested - self.processed},
+            "errors": {
+                "retries": self.retries,
+                "timeouts": self.timeouts,
+                "rate_limits": self.rate_limits,
+                "http_errors": self.http_errors,
+                "connection_errors": self.connection_errors,
+                "other_failures": self.other_failures,
+            },
+            "checkpoint": {
+                "enabled": True,
+                "resumed": resumed,
+                "checkpoints": checkpoints,
+                "initial_records": requested,
+                "resumed_records": requested - self.processed,
+            },
         }
 
 
 def quality_metrics(profiles: list[dict[str, Any]]) -> dict[str, Any]:
     facts = [fact for profile in profiles for fact in profile.get("facts", [])]
     records_with_facts = sum(bool(profile.get("facts")) for profile in profiles)
-    evidenced = sum(bool(fact.get("evidence") or fact.get("quoted_evidence") or fact.get("source_url")) for fact in facts)
-    return {"records_with_facts": records_with_facts, "zero_fact_records": len(profiles) - records_with_facts, "facts": len(facts), "evidence_coverage": evidenced / len(facts) if facts else 0.0}
+    evidenced = sum(
+        bool(fact.get("evidence") or fact.get("quoted_evidence") or fact.get("source_url"))
+        for fact in facts
+    )
+    return {
+        "records_with_facts": records_with_facts,
+        "zero_fact_records": len(profiles) - records_with_facts,
+        "facts": len(facts),
+        "evidence_coverage": evidenced / len(facts) if facts else 0.0,
+    }
 
 
 def empty_metrics() -> dict[str, Any]:
