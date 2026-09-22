@@ -1,0 +1,16 @@
+{
+  "source_name": "Brønnøysundregistrene Enhetsregisteret",
+  "source_url": "https://data.brreg.no/enhetsregisteret/api/enheter/lastned/csv",
+  "endpoint": "https://data.brreg.no/enhetsregisteret/api/enheter/{organisasjonsnummer}",
+  "license": "NLOD 2.0",
+  "license_url": "https://data.norge.no/nlod/en/2.0",
+  "retrieved_at": "2026-09-22T14:23:29Z",
+  "source_sha256": "083f69f2c0cc9a94ff255b17a7c819e4fed4fd3d90a8fff7ed60380229af23a5",
+  "source_records": 1174952,
+  "record_count": 1174930,
+  "valid_unique_company_numbers": 1174930,
+  "invalid_records": 22,
+  "duplicate_records": 0,
+  "entity_scope": "Enhetsregisteret entities; organization numbers are not asserted to be commercial companies.",
+  "transformation_script": "scripts/import_brreg_dataset.py"
+}

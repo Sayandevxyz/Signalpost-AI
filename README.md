@@ -62,7 +62,16 @@ Batch output is checkpointed by company number. Re-running the command skips com
 
 Adapters use public, permitted sources only and enforce request timeouts, bounded response sizes, URL validation, and explicit identity signals. Authentication, paywalls, CAPTCHA, robots restrictions, and private data are never bypassed. Every accepted fact should retain a source URL, quoted evidence, publication date when available, and retrieval date.
 
-The included `StaticRegistrySource` is a deterministic offline adapter for development and tests. Connect permitted live adapters under `signalpost/app/sources/` before using a competition dataset; this repository does not fabricate a 1,000-company dataset. The canonical competition input is intentionally absent; `data/input/demo_companies.csv` is demo/test data only. `data/output/profiles.jsonl` is generated research output and must be passed explicitly to validation or benchmarking.
+The included `StaticRegistrySource` is a deterministic offline adapter for development and tests. Connect permitted live adapters under `signalpost/app/sources/` before using a competition dataset. The canonical organization-number input is generated from the official Brønnøysundregistrene Enhetsregisteret export at `data/input/norwegian_companies.jsonl`; `data/input/dataset_manifest.json` records its retrieval metadata, checksum, counts, and NLOD 2.0 attribution. Contains data under the Norwegian Licence for Open Government Data (NLOD) distributed by Brønnøysundregistrene. Enhetsregisteret contains organizations/entities, so the dataset does not assert that every entity is a commercial company. Downloaded raw exports under `data/raw/` are intentionally ignored.
+
+To reproduce the import, download the official totalbestand CSV, then run:
+
+```bash
+python scripts/import_brreg_dataset.py --input data/raw/enhetsregisteret.csv
+python scripts/validate_dataset.py --input data/input/norwegian_companies.jsonl
+```
+
+Validation requires exactly nine numeric digits per organization number, no malformed records, and no duplicates. The staged benchmark procedure is 10 companies, then 100, then 1,000+; the 1,000+ benchmark has not been run as part of dataset import.
 
 ## Development
 
@@ -81,8 +90,8 @@ Tests are deterministic and do not call external services. PostgreSQL and Redis 
 
 The current default source set is intentionally offline and conservative. Live registry, website, financial, and news adapters must be configured with an approved source and tested against its terms. Benchmark outputs are computed from actual JSONL input and are never hard-coded.
 
-- No legitimate 1,000+ company competition dataset is bundled or fabricated.
-- Demo benchmarks are local smoke tests and are not representative of 1,000-company performance.
+- The canonical dataset contains organization numbers from the official Enhetsregisteret export; it is not a claim that every entity is a commercial company.
+- Demo benchmarks are local smoke tests and are not representative of 1,000-company performance. The staged 1,000+ benchmark remains intentionally deferred.
 - Live external source availability can affect downstream facts and evidence coverage.
 - When sources fail or do not support a claim, Signalpost keeps the value absent/partial rather than fabricating it.
 - Docker configuration is provided. Docker runtime validation could not be performed in the available environment because Docker was not installed.

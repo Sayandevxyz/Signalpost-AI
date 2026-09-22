@@ -28,3 +28,7 @@ __pycache__/
 *.db
 *.sqlite
 *.sqlite3
+
+# Downloaded registry exports are reproducible and intentionally untracked
+data/raw/*.csv
+data/raw/*.csv.gz
