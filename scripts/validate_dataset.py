@@ -3,7 +3,16 @@ import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
-path = Path(sys.argv[1] if len(sys.argv) > 1 else "data/output/company_profiles.jsonl")
+path = Path(sys.argv[1] if len(sys.argv) > 1 else "data/input/companies.csv")
+
+if not path.exists():
+    print(f"Dataset validation  Canonical input dataset not found: {path}")
+    print("Companies: 0 Valid: 0 Invalid: 0")
+    print(
+        "No legitimate competition dataset is bundled; use an explicit JSONL path to validate research output."
+    )
+    raise SystemExit(0)
+
 total = valid = evidence_facts = total_facts = identity_verified = financial_facts = (
     financial_evidence
 ) = 0

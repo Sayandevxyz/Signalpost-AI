@@ -62,7 +62,7 @@ Batch output is checkpointed by company number. Re-running the command skips com
 
 Adapters use public, permitted sources only and enforce request timeouts, bounded response sizes, URL validation, and explicit identity signals. Authentication, paywalls, CAPTCHA, robots restrictions, and private data are never bypassed. Every accepted fact should retain a source URL, quoted evidence, publication date when available, and retrieval date.
 
-The included `StaticRegistrySource` is a deterministic offline adapter for development and tests. Connect permitted live adapters under `signalpost/app/sources/` before using a competition dataset; this repository does not fabricate a 1,000-company dataset.
+The included `StaticRegistrySource` is a deterministic offline adapter for development and tests. Connect permitted live adapters under `signalpost/app/sources/` before using a competition dataset; this repository does not fabricate a 1,000-company dataset. The canonical competition input is intentionally absent; `data/input/demo_companies.csv` is demo/test data only. `data/output/profiles.jsonl` is generated research output and must be passed explicitly to validation or benchmarking.
 
 ## Development
 
@@ -85,4 +85,4 @@ The current default source set is intentionally offline and conservative. Live r
 - Demo benchmarks are local smoke tests and are not representative of 1,000-company performance.
 - Live external source availability can affect downstream facts and evidence coverage.
 - When sources fail or do not support a claim, Signalpost keeps the value absent/partial rather than fabricating it.
-- Docker configuration is provided, but runtime validation depends on Docker being available in the execution environment.
+- Docker configuration is provided. Docker runtime validation could not be performed in the available environment because Docker was not installed.
