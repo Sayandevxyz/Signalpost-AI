@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from ..config import settings
@@ -27,6 +27,13 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False
 
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
+    if engine.dialect.name == "sqlite":
+        columns = {column["name"] for column in inspect(engine).get_columns("company_facts")}
+        if "conflict_metadata" not in columns:
+            with engine.begin() as connection:
+                connection.execute(
+                    text("ALTER TABLE company_facts ADD COLUMN conflict_metadata JSON")
+                )
 
 
 def get_db() -> Generator[Session, None, None]:

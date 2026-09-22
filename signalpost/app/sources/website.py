@@ -3,6 +3,8 @@ from typing import Any
 import httpx
 from bs4 import BeautifulSoup
 
+from .base import response_text, validate_public_url
+
 
 class WebsiteSource:
     name = "website"
@@ -38,14 +40,13 @@ class WebsiteSource:
         return results[:5]
 
     async def fetch(self, url: str) -> str:
-        """Fetch website content."""
+        """Fetch website content after rejecting unsafe network targets."""
+        validate_public_url(url)
         async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
             try:
                 response = await client.get(url)
                 response.raise_for_status()
-                if len(response.content) > 5_000_000:
-                    raise ValueError("website response exceeds maximum size")
-                return response.text
+                return response_text(response)
             except Exception as e:  # noqa: BLE001 - normalize transport errors
                 raise ValueError(f"Failed to fetch {url}: {e}")
 

@@ -5,7 +5,7 @@ from hashlib import sha256
 from typing import Any
 from urllib.parse import urlparse
 
-from sqlalchemy import select
+from sqlalchemy import and_, select
 from sqlalchemy.orm import Session, selectinload
 
 from .models import Company, CompanyEvent, CompanyFact, EvidenceRecord, ResearchRun
@@ -50,14 +50,53 @@ def upsert_company(db: Session, data: dict[str, Any]) -> Company:
 
 
 def add_fact(db: Session, company: Company, data: dict[str, Any]) -> CompanyFact:
+    now = datetime.now(UTC)
+    field = data["field"]
+    normalized = str(data.get("value")) if data.get("value") is not None else None
+    existing = db.scalar(
+        select(CompanyFact).where(
+            and_(
+                CompanyFact.company_id == company.id,
+                CompanyFact.field_name == field,
+                CompanyFact.normalized_value == normalized,
+                CompanyFact.is_current.is_(True),
+            )
+        )
+    )
+    if existing is not None:
+        existing.last_seen_at = now
+        existing.updated_at = now
+        db.commit()
+        db.refresh(existing)
+        return existing
+
+    previous = db.scalars(
+        select(CompanyFact).where(
+            and_(
+                CompanyFact.company_id == company.id,
+                CompanyFact.field_name == field,
+                CompanyFact.is_current.is_(True),
+            )
+        )
+    ).all()
+    for old in previous:
+        old.is_current = False
+        old.last_seen_at = now
+        old.updated_at = now
+
+    conflict_values = data.get("conflict_metadata")
     fact = CompanyFact(
         company_id=company.id,
-        field_name=data["field"],
+        field_name=field,
         value_json=data.get("value"),
-        normalized_value=str(data.get("value")) if data.get("value") is not None else None,
+        normalized_value=normalized,
         unit=data.get("unit"),
         status=data.get("status", "verified"),
         confidence=data.get("confidence"),
+        conflict_metadata=conflict_values,
+        first_seen_at=data.get("first_seen_at", now),
+        last_seen_at=now,
+        is_current=data.get("is_current", True),
     )
     db.add(fact)
     db.commit()

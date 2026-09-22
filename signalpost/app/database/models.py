@@ -64,6 +64,7 @@ class CompanyFact(Base):
     unit: Mapped[str | None] = mapped_column(String(80))
     status: Mapped[str] = mapped_column(String(40), default="verified")
     confidence: Mapped[float | None] = mapped_column(Float)
+    conflict_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     first_seen_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     last_seen_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     is_current: Mapped[bool] = mapped_column(Boolean, default=True)
