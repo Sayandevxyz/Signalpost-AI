@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from __future__ import annotations
-
 from datetime import datetime
 from typing import Any
 
@@ -39,16 +37,24 @@ class Company(Base):
     industry: Mapped[str | None] = mapped_column(String(255))
     description: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
     last_researched_at: Mapped[datetime | None] = mapped_column(DateTime)
 
-    facts: Mapped[list[CompanyFact]] = relationship(back_populates="company", cascade="all, delete-orphan")
-    events: Mapped[list[CompanyEvent]] = relationship(back_populates="company", cascade="all, delete-orphan")
+    facts: Mapped[list[CompanyFact]] = relationship(
+        back_populates="company", cascade="all, delete-orphan"
+    )
+    events: Mapped[list[CompanyEvent]] = relationship(
+        back_populates="company", cascade="all, delete-orphan"
+    )
 
 
 class CompanyFact(Base):
     __tablename__ = "company_facts"
-    __table_args__ = (UniqueConstraint("company_id", "field_name", "normalized_value", "first_seen_at"),)
+    __table_args__ = (
+        UniqueConstraint("company_id", "field_name", "normalized_value", "first_seen_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), index=True)
@@ -62,10 +68,14 @@ class CompanyFact(Base):
     last_seen_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     is_current: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     company: Mapped[Company] = relationship(back_populates="facts")
-    evidence: Mapped[list[EvidenceRecord]] = relationship(back_populates="fact", cascade="all, delete-orphan")
+    evidence: Mapped[list[EvidenceRecord]] = relationship(
+        back_populates="fact", cascade="all, delete-orphan"
+    )
 
 
 class EvidenceRecord(Base):

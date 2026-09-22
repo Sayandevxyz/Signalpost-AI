@@ -10,7 +10,10 @@ class Settings(BaseSettings):
     llm_model: str = ""
     max_total_requests: int = Field(default=100, alias="MAX_TOTAL_REQUESTS")
     request_timeout_seconds: float = 15.0
+
     class Config:
         env_file = ".env"
         extra = "ignore"
+
+
 settings = Settings()

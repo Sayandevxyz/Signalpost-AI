@@ -1,4 +1,5 @@
 """FastAPI application for Signalpost AI."""
+
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
@@ -8,7 +9,11 @@ from .agents.coordinator import ResearchCoordinator
 from .extraction.normalizer import normalize_registration_number
 from .sources.base import StaticRegistrySource
 
-app = FastAPI(title="Signalpost AI", version="0.2.0", description="Evidence-first company intelligence for Norwegian businesses.")
+app = FastAPI(
+    title="Signalpost AI",
+    version="0.2.0",
+    description="Evidence-first company intelligence for Norwegian businesses.",
+)
 coordinator = ResearchCoordinator([StaticRegistrySource()])
 _runs: dict[str, dict] = {}
 
@@ -18,12 +23,26 @@ class ResearchRequest(BaseModel):
 
 
 def response_for(state: dict, run_id: str | None = None) -> dict:
-    return {"company": state.get("company_identity", {}), "facts": state.get("verified_facts", []), "events": state.get("events", []), "verification": {"identity": not bool(state.get("errors"))}, "research": {"run_id": run_id, "status": "partial" if state.get("errors") else "complete", "errors": state.get("errors", [])}}
+    return {
+        "company": state.get("company_identity", {}),
+        "facts": state.get("verified_facts", []),
+        "events": state.get("events", []),
+        "verification": {"identity": not bool(state.get("errors"))},
+        "research": {
+            "run_id": run_id,
+            "status": "partial" if state.get("errors") else "complete",
+            "errors": state.get("errors", []),
+        },
+    }
 
 
 @app.get("/")
 async def root() -> dict:
-    return {"name": "Signalpost AI", "tagline": "Evidence-first company intelligence for Norwegian businesses.", "docs": "/docs"}
+    return {
+        "name": "Signalpost AI",
+        "tagline": "Evidence-first company intelligence for Norwegian businesses.",
+        "docs": "/docs",
+    }
 
 
 @app.get("/health")

@@ -12,7 +12,7 @@ class FinancialSource:
             {
                 "url": f"https://data.brreg.no/enhetsregisteret/api/enheter/{company_number}",
                 "source": "official_registry",
-                "type": "registry_financial"
+                "type": "registry_financial",
             }
         ]
 
@@ -25,12 +25,13 @@ class FinancialSource:
                 if len(response.content) > 2_000_000:
                     raise ValueError("financial response exceeds maximum size")
                 return response.text
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - normalize transport errors
                 raise ValueError(f"Failed to fetch financial data: {e}")
 
     async def extract(self, content: str) -> dict[str, Any]:
         """Extract financial information from JSON response."""
         import json
+
         try:
             data = json.loads(content)
             return {
@@ -38,5 +39,5 @@ class FinancialSource:
                 "establishment_date": data.get("stiftelsesdato"),
                 "organization_form": data.get("organisasjonsform"),
             }
-        except Exception:
+        except (TypeError, ValueError, json.JSONDecodeError):
             return {}

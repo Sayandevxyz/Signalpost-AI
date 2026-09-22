@@ -3,8 +3,6 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
-from __future__ import annotations
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -12,7 +10,11 @@ from .models import Company, CompanyFact, EvidenceRecord, ResearchRun
 
 
 def get_company(db: Session, company_number: str) -> Company | None:
-    return db.scalar(select(Company).where(Company.company_number == company_number).options(selectinload(Company.facts)))
+    return db.scalar(
+        select(Company)
+        .where(Company.company_number == company_number)
+        .options(selectinload(Company.facts))
+    )
 
 
 def upsert_company(db: Session, data: dict[str, Any]) -> Company:
@@ -21,7 +23,18 @@ def upsert_company(db: Session, data: dict[str, Any]) -> Company:
     if company is None:
         company = Company(company_number=number)
         db.add(company)
-    for field in ("legal_name", "organization_type", "status", "address", "postal_code", "city", "country", "website", "industry", "description"):
+    for field in (
+        "legal_name",
+        "organization_type",
+        "status",
+        "address",
+        "postal_code",
+        "city",
+        "country",
+        "website",
+        "industry",
+        "description",
+    ):
         if field in data and data[field] is not None:
             setattr(company, field, data[field])
     company.last_researched_at = datetime.now(UTC)

@@ -8,19 +8,8 @@ class NewsSource:
 
     async def search(self, company_number: str, company_name: str = "") -> list[dict[str, Any]]:
         """Search for news about company."""
-        queries = [company_name] if company_name else [company_number]
-        results = []
-        
-        async with httpx.AsyncClient(timeout=10) as client:
-            for q in queries:
-                try:
-                    # Mock news search - in production use real news API
-                    # For demo, we return empty to avoid API calls
-                    pass
-                except Exception:
-                    pass
-        
-        return results
+        # Search is intentionally empty until a permitted news provider is configured.
+        return []
 
     async def fetch(self, url: str) -> str:
         """Fetch news article."""
@@ -31,7 +20,7 @@ class NewsSource:
                 if len(response.content) > 5_000_000:
                     raise ValueError("news response exceeds maximum size")
                 return response.text
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - normalize transport errors
                 raise ValueError(f"Failed to fetch news: {e}")
 
     async def extract(self, content: str) -> list[dict[str, Any]]:

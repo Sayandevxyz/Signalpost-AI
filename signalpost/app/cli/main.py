@@ -1,4 +1,5 @@
 """Signalpost command-line interface."""
+
 from __future__ import annotations
 
 import argparse
@@ -13,24 +14,34 @@ from ..sources.base import StaticRegistrySource
 def render(profile: dict) -> str:
     company = profile.get("company", {})
     research = profile.get("research", {})
-    return "\n".join([
-        "Signalpost AI",
-        "=" * 48,
-        f"Company: {company.get('legal_name') or 'Not found'}",
-        f"Registration number: {company.get('company_number')}",
-        f"Status: {company.get('status') or 'not_found'}",
-        f"Website: {company.get('website') or 'not_found'}",
-        f"Verified facts: {len(profile.get('facts', []))}",
-        f"Evidence: {sum(bool(f.get('evidence') or f.get('source_url')) for f in profile.get('facts', []))} fact sources",
-        f"Research status: {research.get('status', 'unknown')}",
-        *(f"Error: {error}" for error in research.get("errors", [])),
-    ])
+    return "\n".join(
+        [
+            "Signalpost AI",
+            "=" * 48,
+            f"Company: {company.get('legal_name') or 'Not found'}",
+            f"Registration number: {company.get('company_number')}",
+            f"Status: {company.get('status') or 'not_found'}",
+            f"Website: {company.get('website') or 'not_found'}",
+            f"Verified facts: {len(profile.get('facts', []))}",
+            f"Evidence: {sum(bool(f.get('evidence') or f.get('source_url')) for f in profile.get('facts', []))} fact sources",
+            f"Research status: {research.get('status', 'unknown')}",
+            *(f"Error: {error}" for error in research.get("errors", [])),
+        ]
+    )
 
 
 async def research(number: str) -> dict:
     coordinator = ResearchCoordinator([StaticRegistrySource()])
     state = await coordinator.research(normalize_registration_number(number))
-    return {"company": state.get("company_identity", {}), "facts": state.get("verified_facts", []), "events": state.get("events", []), "research": {"status": "partial" if state.get("errors") else "complete", "errors": state.get("errors", [])}}
+    return {
+        "company": state.get("company_identity", {}),
+        "facts": state.get("verified_facts", []),
+        "events": state.get("events", []),
+        "research": {
+            "status": "partial" if state.get("errors") else "complete",
+            "errors": state.get("errors", []),
+        },
+    }
 
 
 def main() -> None:
@@ -52,6 +63,7 @@ def main() -> None:
         print(json.dumps(profile, indent=2, default=str) if args.json else render(profile))
     else:
         from scripts.research_companies import run
+
         asyncio.run(run(args.input, args.output, args.concurrency))
         print(f"Wrote batch profiles to {args.output}")
 

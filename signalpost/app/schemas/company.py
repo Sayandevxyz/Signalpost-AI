@@ -16,6 +16,7 @@ class Evidence(BaseModel):
     identity_match_score: float = Field(ge=0, le=1)
     evidence_score: float = Field(ge=0, le=1)
 
+
 class Fact(BaseModel):
     field: str
     value: Any | None = None
@@ -27,6 +28,7 @@ class Fact(BaseModel):
     first_seen_at: datetime = Field(default_factory=datetime.utcnow)
     last_seen_at: datetime = Field(default_factory=datetime.utcnow)
     is_current: bool = True
+
 
 class CompanyIdentity(BaseModel):
     company_number: str = Field(pattern=r"^\d{9}$")
@@ -43,6 +45,7 @@ class CompanyIdentity(BaseModel):
     @classmethod
     def normalize_number(cls, value: str) -> str:
         return value.strip().replace(" ", "")
+
 
 class CompanyProfile(BaseModel):
     company: CompanyIdentity

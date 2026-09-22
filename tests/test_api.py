@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from signalpost.app.main import app
 
-
 client = TestClient(app)
 
 

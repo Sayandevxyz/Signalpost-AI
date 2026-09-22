@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from ..sources.news import NewsSource
@@ -11,40 +11,36 @@ class NewsAgent:
         self.source = NewsSource()
 
     async def research(
-        self,
-        company_number: str,
-        company_identity: dict[str, Any]
+        self, company_number: str, company_identity: dict[str, Any]
     ) -> dict[str, Any]:
         """Search and extract news events."""
-        results = {
-            "events": [],
-            "source_documents": [],
-            "errors": []
-        }
-        
+        results = {"events": [], "source_documents": [], "errors": []}
+
         company_name = company_identity.get("legal_name", "")
-        
+
         try:
             search_results = await self.source.search(company_number, company_name)
-            
+
             for search_result in search_results:
                 try:
                     content = await self.source.fetch(search_result["url"])
                     extracted = await self.source.extract(content)
-                    
-                    results["source_documents"].append({
-                        "url": search_result["url"],
-                        "content": extracted,
-                        "retrieved_at": datetime.utcnow().isoformat()
-                    })
-                    
+
+                    results["source_documents"].append(
+                        {
+                            "url": search_result["url"],
+                            "content": extracted,
+                            "retrieved_at": datetime.now(UTC).isoformat(),
+                        }
+                    )
+
                     # Add extracted events
                     results["events"].extend(extracted)
-                    
-                except Exception as e:
-                    results["errors"].append(f"Failed to extract news: {str(e)}")
-                    
-        except Exception as e:
-            results["errors"].append(f"News research failed: {str(e)}")
-        
+
+                except Exception as e:  # noqa: BLE001 - preserve partial research
+                    results["errors"].append(f"Failed to extract news: {e!s}")
+
+        except Exception as e:  # noqa: BLE001 - preserve partial research
+            results["errors"].append(f"News research failed: {e!s}")
+
         return results

@@ -1,4 +1,5 @@
 """Checkpointed, bounded-concurrency batch research runner."""
+
 from __future__ import annotations
 
 import argparse
@@ -17,7 +18,9 @@ from signalpost.app.sources.base import StaticRegistrySource
 
 def load_numbers(path: Path) -> list[str]:
     with path.open(newline="", encoding="utf-8") as handle:
-        return [normalize_registration_number(row["company_number"]) for row in csv.DictReader(handle)]
+        return [
+            normalize_registration_number(row["company_number"]) for row in csv.DictReader(handle)
+        ]
 
 
 def load_done(path: Path) -> set[str]:
@@ -40,7 +43,10 @@ def serialize(state: dict) -> dict:
         "company": state.get("company_identity", {}),
         "facts": state.get("verified_facts", []),
         "events": state.get("events", []),
-        "research": {"status": "partial" if state.get("errors") else "complete", "errors": state.get("errors", [])},
+        "research": {
+            "status": "partial" if state.get("errors") else "complete",
+            "errors": state.get("errors", []),
+        },
     }
 
 
@@ -58,20 +64,31 @@ async def run(input_path: str, output_path: str, concurrency: int = 4) -> None:
             for attempt in range(3):
                 try:
                     return number, serialize(await coordinator.research(number))
-                except Exception as exc:  # keep one company from stopping the batch
+                except Exception as exc:  # noqa: BLE001 - isolate failures per company
                     if attempt == 2:
-                        return number, {"company": {"company_number": number}, "facts": [], "events": [], "research": {"status": "failed", "errors": [str(exc)]}}
+                        return number, {
+                            "company": {"company_number": number},
+                            "facts": [],
+                            "events": [],
+                            "research": {"status": "failed", "errors": [str(exc)]},
+                        }
                     await asyncio.sleep(0.25 * (2**attempt))
         raise RuntimeError("unreachable")
 
     results = await asyncio.gather(*(research(number) for number in queue))
-    with output_file.open("a", encoding="utf-8") as handle:
-        for _, profile in results:
-            handle.write(json.dumps(profile, default=str, ensure_ascii=False) + "\n")
+    lines = [json.dumps(profile, default=str, ensure_ascii=False) + "\n" for _, profile in results]
+
+    def append_lines() -> None:
+        with output_file.open("a", encoding="utf-8") as handle:
+            handle.writelines(lines)
+
+    await asyncio.to_thread(append_lines)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Research Norwegian companies in a resumable batch")
+    parser = argparse.ArgumentParser(
+        description="Research Norwegian companies in a resumable batch"
+    )
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--concurrency", type=int, default=4)
