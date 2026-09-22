@@ -71,7 +71,7 @@ python scripts/import_brreg_dataset.py --input data/raw/enhetsregisteret.csv
 python scripts/validate_dataset.py --input data/input/norwegian_companies.jsonl
 ```
 
-Validation requires exactly nine numeric digits per organization number, no malformed records, and no duplicates. The staged benchmark procedure is 10 companies, then 100, then 1,000+; the 1,000+ benchmark has not been run as part of dataset import.
+Validation requires exactly nine numeric digits per organization number, no malformed records, and no duplicates. The completed benchmark used exactly 1,000 organization research runs from the canonical dataset, with checkpointing and resume exercised. Results are stored at `data/output/profiles-1000.jsonl` and summarized in `data/output/benchmark.json`.
 
 ## Development
 
@@ -91,7 +91,8 @@ Tests are deterministic and do not call external services. PostgreSQL and Redis 
 The current default source set is intentionally offline and conservative. Live registry, website, financial, and news adapters must be configured with an approved source and tested against its terms. Benchmark outputs are computed from actual JSONL input and are never hard-coded.
 
 - The canonical dataset contains organization numbers from the official Enhetsregisteret export; it is not a claim that every entity is a commercial company.
-- Demo benchmarks are local smoke tests and are not representative of 1,000-company performance. The staged 1,000+ benchmark remains intentionally deferred.
+- The exact 1,000-company benchmark completed with 1,000 records, 84 verified facts, and 916 zero-fact records. Zero-fact records are retained research runs and are not described as successful fact extraction.
+- Checkpointing and resume were exercised. Latency, throughput, request counts, LLM call counts, and cost metrics were unavailable for this offline benchmark artifact.
 - Live external source availability can affect downstream facts and evidence coverage.
 - When sources fail or do not support a claim, Signalpost keeps the value absent/partial rather than fabricating it.
 - Docker configuration is provided. Docker runtime validation could not be performed in the available environment because Docker was not installed.

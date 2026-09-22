@@ -13,20 +13,31 @@ def benchmark(path: str) -> dict:
         for line in Path(path).read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    total = len(profiles)
-    successful = sum(
+    requested = len(profiles)
+    complete = sum(
         profile.get("research", {}).get("status") == "complete" for profile in profiles
     )
+    partial = sum(profile.get("research", {}).get("status") == "partial" for profile in profiles)
+    failed = sum(profile.get("research", {}).get("status") == "failed" for profile in profiles)
     facts = [fact for profile in profiles for fact in profile.get("facts", [])]
-    evidenced = sum(bool(fact.get("evidence") or fact.get("source_url")) for fact in facts)
+    evidenced = sum(
+        bool(fact.get("evidence") or fact.get("quoted_evidence") or fact.get("source_url"))
+        for fact in facts
+    )
+    records_with_verified_facts = sum(bool(profile.get("facts")) for profile in profiles)
     result = {
-        "companies_processed": total,
-        "success_rate": successful / total if total else 0.0,
-        "evidence_rate": evidenced / len(facts) if facts else 0.0,
+        "requested": requested,
+        "processed": requested,
+        "complete": complete,
+        "partial": partial,
+        "failed": failed,
         "facts": len(facts),
+        "records_with_verified_facts": records_with_verified_facts,
+        "zero_fact_records": requested - records_with_verified_facts,
+        "evidence_coverage": evidenced / len(facts) if facts else 0.0,
     }
     Path("data/output").mkdir(parents=True, exist_ok=True)
-    Path("data/output/benchmark.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    Path("data/output/benchmark.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     return result
 
 

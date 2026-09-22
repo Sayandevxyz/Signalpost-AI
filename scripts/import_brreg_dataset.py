@@ -17,7 +17,9 @@ NUMBER_PATTERN = re.compile(r"^\d{9}$")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Import real organization numbers from an official Brønnøysundregistrene CSV export.")
+    parser = argparse.ArgumentParser(
+        description="Import real organization numbers from an official Brønnøysundregistrene CSV export."
+    )
     parser.add_argument("--input", type=Path, default=Path("data/raw/enhetsregisteret.csv"))
     parser.add_argument("--output", type=Path, default=Path("data/input/norwegian_companies.jsonl"))
     parser.add_argument("--manifest", type=Path, default=Path("data/input/dataset_manifest.json"))
@@ -33,12 +35,17 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def import_dataset(input_path: Path, output_path: Path, manifest_path: Path, minimum: int) -> dict[str, object]:
+def import_dataset(
+    input_path: Path, output_path: Path, manifest_path: Path, minimum: int
+) -> dict[str, object]:
     seen: set[str] = set()
     source_records = valid = invalid = duplicates = 0
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with input_path.open("r", encoding="utf-8-sig", newline="") as source, output_path.open("w", encoding="utf-8") as output:
+    with (
+        input_path.open("r", encoding="utf-8-sig", newline="") as source,
+        output_path.open("w", encoding="utf-8") as output,
+    ):
         sample = source.read(8192)
         source.seek(0)
         try:
@@ -62,7 +69,9 @@ def import_dataset(input_path: Path, output_path: Path, manifest_path: Path, min
             valid += 1
 
     if valid < minimum:
-        raise RuntimeError(f"Only {valid} valid unique organization numbers found; minimum is {minimum}")
+        raise RuntimeError(
+            f"Only {valid} valid unique organization numbers found; minimum is {minimum}"
+        )
 
     retrieved_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     manifest = {
@@ -81,7 +90,9 @@ def import_dataset(input_path: Path, output_path: Path, manifest_path: Path, min
         "entity_scope": "Enhetsregisteret entities; organization numbers are not asserted to be commercial companies.",
         "transformation_script": "scripts/import_brreg_dataset.py",
     }
-    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     return manifest
 
 

@@ -12,8 +12,14 @@ def validate(path: Path) -> dict[str, object]:
     seen: set[str] = set()
     errors: list[dict[str, object]] = []
     if not path.exists():
-        return {"path": str(path), "total": 0, "valid": 0, "duplicates": 0, "invalid": 0,
-                "errors": [{"line": 0, "error": "file_not_found"}]}
+        return {
+            "path": str(path),
+            "total": 0,
+            "valid": 0,
+            "duplicates": 0,
+            "invalid": 0,
+            "errors": [{"line": 0, "error": "file_not_found"}],
+        }
 
     for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         if not raw_line.strip():
@@ -34,13 +40,21 @@ def validate(path: Path) -> dict[str, object]:
         if number in seen:
             duplicates += 1
             invalid += 1
-            errors.append({"line": line_number, "error": "duplicate_company_number", "company_number": number})
+            errors.append(
+                {"line": line_number, "error": "duplicate_company_number", "company_number": number}
+            )
             continue
         seen.add(number)
         valid += 1
 
-    return {"path": str(path), "total": total, "valid": valid,
-            "duplicates": duplicates, "invalid": invalid, "errors": errors}
+    return {
+        "path": str(path),
+        "total": total,
+        "valid": valid,
+        "duplicates": duplicates,
+        "invalid": invalid,
+        "errors": errors,
+    }
 
 
 if __name__ == "__main__":
