@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
+from collections.abc import Callable
 from datetime import UTC, datetime
-from typing import Any, Callable
-from urllib.parse import urlparse
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -16,8 +15,8 @@ from ..agents.website_agent import WebsiteAgent
 from ..database import repositories
 from ..database.database import SessionLocal, init_db
 from ..graph.state import ResearchState
-from ..verification.freshness import FreshnessChecker
 from ..sources.base import StaticRegistrySource
+from ..verification.freshness import FreshnessChecker
 
 
 class ResearchCoordinator:
@@ -87,7 +86,9 @@ class ResearchCoordinator:
             if self.session_factory is not None:
                 init_db()
                 db = self.session_factory()
-                company = repositories.upsert_company(db, state.get("company_identity", {}) or {"company_number": company_number})
+                company = repositories.upsert_company(
+                    db, state.get("company_identity", {}) or {"company_number": company_number}
+                )
                 run = repositories.start_run(db, company)
                 repositories.persist_state(db, company, state)
                 repositories.finish_run(
