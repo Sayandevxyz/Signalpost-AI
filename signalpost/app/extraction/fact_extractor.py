@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
 
 class ExtractedFact(BaseModel):
     field: str
-    value: Any | None = None
-    unit: str | None = None
+    value: Any = None
+    unit: Optional[str] = None
     source_url: str
     quoted_evidence: str
-    published_at: datetime | None = None
+    published_at: Optional[datetime] = None
     confidence: float = 0.8
 
 
