@@ -110,6 +110,12 @@ class ResearchCoordinator:
 
     @staticmethod
     def _merge(state: ResearchState, result: dict[str, Any]) -> None:
+        identity = result.get("company_identity")
+        if identity:
+            state["company_identity"] = {
+                **state.get("company_identity", {}),
+                **identity,
+            }
         state["candidate_facts"].extend(result.get("facts", result.get("candidate_facts", [])))
         state["source_documents"].extend(result.get("source_documents", []))
         state["events"].extend(result.get("events", []))
