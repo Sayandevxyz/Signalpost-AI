@@ -32,6 +32,10 @@ def benchmark(path: str) -> dict:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="data/output/profiles.jsonl")
+    parser.add_argument(
+        "--input",
+        default="data/output/profiles.jsonl",
+        help="Generated research JSONL to measure; never use the canonical input dataset directly.",
+    )
     args = parser.parse_args()
     print(json.dumps(benchmark(args.input), indent=2))
