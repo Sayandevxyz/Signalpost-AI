@@ -14,9 +14,7 @@ def benchmark(path: str) -> dict:
         if line.strip()
     ]
     requested = len(profiles)
-    complete = sum(
-        profile.get("research", {}).get("status") == "complete" for profile in profiles
-    )
+    complete = sum(profile.get("research", {}).get("status") == "complete" for profile in profiles)
     partial = sum(profile.get("research", {}).get("status") == "partial" for profile in profiles)
     failed = sum(profile.get("research", {}).get("status") == "failed" for profile in profiles)
     facts = [fact for profile in profiles for fact in profile.get("facts", [])]
@@ -37,7 +35,9 @@ def benchmark(path: str) -> dict:
         "evidence_coverage": evidenced / len(facts) if facts else 0.0,
     }
     Path("data/output").mkdir(parents=True, exist_ok=True)
-    Path("data/output/benchmark.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    Path("data/output/benchmark.json").write_text(
+        json.dumps(result, indent=2) + "\n", encoding="utf-8"
+    )
     return result
 
 
