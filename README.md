@@ -42,7 +42,7 @@ The API is available at `http://localhost:8000`, with OpenAPI documentation at `
 python -m signalpost.app.cli.main research 912345678
 python -m signalpost.app.cli.main research 912345678 --json
 python -m signalpost.app.cli.main batch data/input/demo_companies.csv --output data/output/profiles.jsonl
-python scripts/research_companies.py --input data/input/demo_companies.csv --output data/output/profiles.jsonl --concurrency 4
+python scripts/research_companies.py --input data/input/demo_companies.csv --output data/output/profiles.jsonl --concurrency 4 --metrics-output data/output/benchmark-metrics.json
 python scripts/validate_dataset.py data/output/profiles.jsonl
 python scripts/benchmark.py --input data/output/profiles.jsonl
 python scripts/export_profiles.py --input data/output/profiles.jsonl --output-dir data/output
