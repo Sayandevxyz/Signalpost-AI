@@ -2,6 +2,36 @@
 
 Evidence-first company intelligence for Norwegian businesses.
 
+# Builderr Submission Information
+
+## 1. Company Profiles
+
+Signalpost includes at least 1,000 completed company/organization research profiles. The completed profiles are distinct from profiles containing verified company facts.
+
+- Canonical dataset: 1,174,930 valid unique Norwegian organization numbers
+- Benchmark profiles: exactly 1,000
+- Benchmark output: `data/output/profiles-1000.jsonl`
+- Benchmark result:
+  - 1,000 processed
+  - 1,000 complete
+  - 0 partial
+  - 0 failed
+  - 84 records with verified facts
+  - 916 zero-fact records
+  - 100% evidence coverage for extracted facts
+
+The benchmark therefore contains 1,000 completed research profiles, of which 84 contain verified facts; it does not claim that all 1,000 profiles contain verified company facts.
+
+## 2. Repository
+
+Repository URL: https://github.com/Sayandevxyz/Signalpost-AI.git
+
+## 3. Exact Commit Hash
+
+```text
+Commit: 0ec4a1b2467bb46dbcfedd82fc084886190a06aa
+```
+
 Signalpost accepts a Norwegian organisation number and returns a structured profile. It deliberately separates retrieval, deterministic extraction, identity matching, evidence verification, and persistence. Unsupported values are represented as `null`/`not_found`; the system never asks an LLM to invent financial or registration data.
 
 ## Architecture
