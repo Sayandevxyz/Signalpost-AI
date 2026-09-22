@@ -34,8 +34,7 @@ class NewsAgent:
                         }
                     )
 
-                    # Add extracted events
-                    results["events"].extend(extracted)
+                                results["events"].extend(extracted)
 
                 except Exception as e:  # noqa: BLE001 - preserve partial research
                     results["errors"].append(f"Failed to extract news: {e!s}")

@@ -8,7 +8,6 @@ class NewsSource:
 
     async def search(self, company_number: str, company_name: str = "") -> list[dict[str, Any]]:
         """Search for news about company."""
-        # Search is intentionally empty until a permitted news provider is configured.
         return []
 
     async def fetch(self, url: str) -> str:

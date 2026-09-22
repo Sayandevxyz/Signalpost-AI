@@ -17,8 +17,7 @@ class WebsiteSource:
         async with httpx.AsyncClient(timeout=10) as client:
             for q in search_queries:
                 try:
-                    # Use DuckDuckGo-like public search (fallback to mock for demo)
-                    url = f"https://html.duckduckgo.com/?q={q}+site:.no"
+                                url = f"https://html.duckduckgo.com/?q={q}+site:.no"
                     response = await client.get(
                         url,
                         headers={
@@ -54,7 +53,6 @@ class WebsiteSource:
         """Extract structured data from website content."""
         soup = BeautifulSoup(content, "html.parser")
 
-        # Remove scripts and styles
         for script in soup(["script", "style"]):
             script.decompose()
 

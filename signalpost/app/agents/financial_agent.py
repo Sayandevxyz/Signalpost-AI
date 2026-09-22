@@ -35,15 +35,13 @@ class FinancialAgent:
                         }
                     )
 
-                    # Extract facts using deterministic extraction
-                    import json
+                                import json
 
                     data = json.loads(content) if isinstance(content, str) else content
                     facts = self.extractor.extract_from_registry(data, search_result["url"])
 
                     for fact in facts:
-                        # Only include financial facts if they meet confidence threshold
-                        if (
+                                        if (
                             fact.field in ("employees", "revenue", "profit", "assets")
                             and fact.confidence >= 0.8
                         ):

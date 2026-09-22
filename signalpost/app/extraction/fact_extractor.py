@@ -52,16 +52,12 @@ class FactExtractor:
         """Extract facts from website content."""
         facts = []
 
-        # This would use LLM in production, but for now return empty
-        # to avoid hallucination without evidence
         return facts
 
     def extract_from_news(self, data: dict[str, Any], source_url: str) -> list[ExtractedFact]:
         """Extract events/facts from news content."""
         events = []
 
-        # This would use LLM to extract structured events
-        # For now return empty to be safe
         return events
 
     @staticmethod

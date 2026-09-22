@@ -42,22 +42,18 @@ class ResearchGraph:
         }
 
         try:
-            # Step 1: Resolve company identity from registry
-            state = await self._resolve_company(state)
+                state = await self._resolve_company(state)
 
             if not state.get("company_identity"):
                 state["errors"].append("Failed to resolve company identity")
                 state["finished_at"] = datetime.now(UTC)
                 return state
 
-            # Step 2: Parallel research from multiple sources
-            state = await self._parallel_research(state)
+                state = await self._parallel_research(state)
 
-            # Step 3: Normalize and verify facts
-            state = await self._verify_facts(state)
+                state = await self._verify_facts(state)
 
-            # Step 4: Apply freshness logic
-            state = await self._apply_freshness(state)
+                state = await self._apply_freshness(state)
 
             state["finished_at"] = datetime.now(UTC)
 
@@ -122,8 +118,7 @@ class ResearchGraph:
     async def _apply_freshness(self, state: ResearchState) -> ResearchState:
         """Step 4: Apply freshness logic and conflict resolution."""
         try:
-            # Group facts by field
-            facts_by_field = {}
+                    facts_by_field = {}
             for fact in state["verified_facts"]:
                 field = fact.get("field")
                 if field:
@@ -131,12 +126,10 @@ class ResearchGraph:
                         facts_by_field[field] = []
                     facts_by_field[field].append(fact)
 
-            # For each field, keep only the freshest fact
-            final_facts = []
+                final_facts = []
             for field, facts in facts_by_field.items():
                 if facts:
-                    # Sort by some freshness criteria and pick the best
-                    best = max(facts, key=lambda f: f.get("confidence", 0))
+                                best = max(facts, key=lambda f: f.get("confidence", 0))
                     best["is_current"] = True
                     final_facts.append(best)
 

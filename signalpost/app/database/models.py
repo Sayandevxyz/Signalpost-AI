@@ -133,7 +133,7 @@ class CompanyEvent(Base):
     company: Mapped[Company] = relationship(back_populates="events")
 
 
-# Backwards-compatible aliases for lightweight callers.
+
 CompanyRecord = Company
 Evidence = EvidenceRecord
 Event = CompanyEvent
