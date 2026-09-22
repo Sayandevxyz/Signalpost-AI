@@ -80,3 +80,9 @@ Tests are deterministic and do not call external services. PostgreSQL and Redis 
 ## Limitations
 
 The current default source set is intentionally offline and conservative. Live registry, website, financial, and news adapters must be configured with an approved source and tested against its terms. Benchmark outputs are computed from actual JSONL input and are never hard-coded.
+
+- No legitimate 1,000+ company competition dataset is bundled or fabricated.
+- Demo benchmarks are local smoke tests and are not representative of 1,000-company performance.
+- Live external source availability can affect downstream facts and evidence coverage.
+- When sources fail or do not support a claim, Signalpost keeps the value absent/partial rather than fabricating it.
+- Docker configuration is provided, but runtime validation depends on Docker being available in the execution environment.
