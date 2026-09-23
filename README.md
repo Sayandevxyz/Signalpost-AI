@@ -26,11 +26,9 @@ The benchmark therefore contains 1,000 completed research profiles, of which 84 
 
 Repository URL: https://github.com/Sayandevxyz/Signalpost-AI.git
 
-## 3. Exact Commit Hash
+## 3. Verification Base Commit
 
-```text
-Commit: 8184e9787a5432c3ca06f0ebd163fb2701f75e5c
-```
+The verification record was produced against commit `8184e9787a5432c3ca06f0ebd163fb2701f75e5c`. The final submission commit is reported by `git rev-parse HEAD` after the final documentation commit.
 
 Signalpost accepts a Norwegian organisation number and returns a structured profile. It deliberately separates retrieval, deterministic extraction, identity matching, evidence verification, and persistence. Unsupported values are represented as `null`/`not_found`; the system never asks an LLM to invent financial or registration data.
 
