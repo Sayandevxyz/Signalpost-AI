@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -22,5 +22,5 @@ class FreshnessChecker:
     def mark(self, old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
         old["is_current"] = False
         new["is_current"] = True
-        new.setdefault("first_seen_at", old.get("first_seen_at", datetime.now(UTC)))
+        new.setdefault("first_seen_at", old.get("first_seen_at", datetime.now(timezone.utc)))
         return new

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel, Field
@@ -92,7 +92,7 @@ async def root() -> dict:
 @app.get("/health")
 async def health(db: Session = Depends(get_db)) -> dict:
     db.execute(__import__("sqlalchemy").text("SELECT 1"))
-    return {"status": "ok", "database": "ok", "timestamp": datetime.now(UTC)}
+    return {"status": "ok", "database": "ok", "timestamp": datetime.now(timezone.utc)}
 
 
 @app.post("/research")

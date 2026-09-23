@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from hashlib import sha256
 from typing import Any
 from urllib.parse import urlparse
@@ -43,14 +43,14 @@ def upsert_company(db: Session, data: dict[str, Any]) -> Company:
     ):
         if data.get(field) is not None:
             setattr(company, field, data[field])
-    company.last_researched_at = datetime.now(UTC)
+    company.last_researched_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(company)
     return company
 
 
 def add_fact(db: Session, company: Company, data: dict[str, Any]) -> CompanyFact:
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     field = data["field"]
     normalized = str(data.get("value")) if data.get("value") is not None else None
     existing = db.scalar(
@@ -114,7 +114,7 @@ def add_evidence(db: Session, fact: CompanyFact, data: dict[str, Any]) -> Eviden
         source_type=data.get("source_type"),
         quoted_evidence=data.get("evidence", data.get("quoted_evidence", "")),
         published_at=data.get("published_at"),
-        retrieved_at=datetime.now(UTC),
+        retrieved_at=datetime.now(timezone.utc),
         content_hash=sha256(data.get("evidence", "").encode()).hexdigest()
         if data.get("evidence")
         else None,
@@ -151,14 +151,14 @@ def persist_state(db: Session, company: Company, state: dict[str, Any]) -> None:
                 event_date=event.get("event_date"),
                 source_url=event["source_url"],
                 source_published_at=event.get("published_at"),
-                retrieved_at=datetime.now(UTC),
+                retrieved_at=datetime.now(timezone.utc),
             )
         )
     db.commit()
 
 
 def finish_run(db: Session, run: ResearchRun, state: dict[str, Any], status: str) -> ResearchRun:
-    run.finished_at = datetime.now(UTC)
+    run.finished_at = datetime.now(timezone.utc)
     run.status = status
     run.request_count = state.get("request_count", 0)
     run.search_count = state.get("search_count", 0)

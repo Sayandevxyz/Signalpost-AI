@@ -5,7 +5,7 @@ import csv
 import hashlib
 import json
 import re
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 SOURCE_NAME = "Brønnøysundregistrene Enhetsregisteret"
@@ -73,7 +73,7 @@ def import_dataset(
             f"Only {valid} valid unique organization numbers found; minimum is {minimum}"
         )
 
-    retrieved_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    retrieved_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     manifest = {
         "source_name": SOURCE_NAME,
         "source_url": SOURCE_URL,

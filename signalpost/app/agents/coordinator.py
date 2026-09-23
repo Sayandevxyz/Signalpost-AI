@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -36,7 +36,7 @@ class ResearchCoordinator:
         self.session_factory = session_factory
 
     async def research(self, company_number: str) -> ResearchState:
-        started = datetime.now(UTC)
+        started = datetime.now(timezone.utc)
         state: ResearchState = {
             "company_number": company_number,
             "company_identity": {},
@@ -105,7 +105,7 @@ class ResearchCoordinator:
         finally:
             if db is not None:
                 db.close()
-            state["finished_at"] = datetime.now(UTC)
+            state["finished_at"] = datetime.now(timezone.utc)
         return state
 
     @staticmethod
