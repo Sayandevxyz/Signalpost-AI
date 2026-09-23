@@ -17,7 +17,7 @@ class WebsiteSource:
         async with httpx.AsyncClient(timeout=10) as client:
             for q in search_queries:
                 try:
-                                url = f"https://html.duckduckgo.com/?q={q}+site:.no"
+                    url = f"https://html.duckduckgo.com/?q={q}+site:.no"
                     response = await client.get(
                         url,
                         headers={

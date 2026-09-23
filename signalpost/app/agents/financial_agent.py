@@ -35,13 +35,13 @@ class FinancialAgent:
                         }
                     )
 
-                                import json
+                    import json
 
                     data = json.loads(content) if isinstance(content, str) else content
                     facts = self.extractor.extract_from_registry(data, search_result["url"])
 
                     for fact in facts:
-                                        if (
+                        if (
                             fact.field in ("employees", "revenue", "profit", "assets")
                             and fact.confidence >= 0.8
                         ):

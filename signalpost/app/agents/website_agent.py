@@ -21,7 +21,7 @@ class WebsiteAgent:
         company_name = company_identity.get("legal_name", "")
 
         try:
-                search_results = await self.source.search(company_number, company_name)
+            search_results = await self.source.search(company_number, company_name)
 
             for search_result in search_results:
                 try:
@@ -37,7 +37,7 @@ class WebsiteAgent:
                         }
                     )
 
-                                if extracted.get("h1"):
+                    if extracted.get("h1"):
                         results["candidate_facts"].append(
                             {
                                 "field": "description",

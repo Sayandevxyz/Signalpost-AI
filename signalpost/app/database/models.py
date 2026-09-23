@@ -48,6 +48,9 @@ class Company(Base):
     events: Mapped[list[CompanyEvent]] = relationship(
         back_populates="company", cascade="all, delete-orphan"
     )
+    research_runs: Mapped[list[ResearchRun]] = relationship(
+        back_populates="company", cascade="all, delete-orphan"
+    )
 
 
 class CompanyFact(Base):
@@ -114,6 +117,8 @@ class ResearchRun(Base):
     token_usage: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     estimated_cost: Mapped[float] = mapped_column(Float, default=0.0)
     error_message: Mapped[str | None] = mapped_column(Text)
+
+    company: Mapped[Company | None] = relationship(back_populates="research_runs")
 
 
 class CompanyEvent(Base):

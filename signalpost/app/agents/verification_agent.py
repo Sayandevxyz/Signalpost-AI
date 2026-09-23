@@ -19,17 +19,17 @@ class VerificationAgent:
         rejected = []
 
         for fact in candidate_facts:
-                evidence = fact.get("evidence", "")
+            evidence = fact.get("evidence", "")
             if not evidence or not isinstance(evidence, str) or len(evidence.strip()) < 5:
                 rejected.append({**fact, "rejection_reason": "Insufficient evidence"})
                 continue
 
-                confidence = fact.get("confidence", 0)
+            confidence = fact.get("confidence", 0)
             if confidence < 0.6:
                 rejected.append({**fact, "rejection_reason": f"Low confidence: {confidence}"})
                 continue
 
-                if self.evidence.verify(fact, evidence):
+            if self.evidence.verify(fact, evidence):
                 verified.append(fact)
             else:
                 rejected.append({**fact, "rejection_reason": "Evidence does not support claim"})

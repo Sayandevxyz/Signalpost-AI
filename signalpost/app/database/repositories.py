@@ -15,7 +15,7 @@ def get_company(db: Session, company_number: str) -> Company | None:
     return db.scalar(
         select(Company)
         .where(Company.company_number == company_number)
-        .options(selectinload(Company.facts))
+        .options(selectinload(Company.facts).selectinload(CompanyFact.evidence), selectinload(Company.events), selectinload(Company.research_runs))
     )
 
 
