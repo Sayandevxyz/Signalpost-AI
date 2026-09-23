@@ -29,7 +29,7 @@ Repository URL: https://github.com/Sayandevxyz/Signalpost-AI.git
 ## 3. Exact Commit Hash
 
 ```text
-Commit: 0ec4a1b2467bb46dbcfedd82fc084886190a06aa
+Commit: 8184e9787a5432c3ca06f0ebd163fb2701f75e5c
 ```
 
 Signalpost accepts a Norwegian organisation number and returns a structured profile. It deliberately separates retrieval, deterministic extraction, identity matching, evidence verification, and persistence. Unsupported values are represented as `null`/`not_found`; the system never asks an LLM to invent financial or registration data.
@@ -127,3 +127,21 @@ The current default source set is intentionally offline and conservative. Live r
 - Live external source availability can affect downstream facts and evidence coverage.
 - When sources fail or do not support a claim, Signalpost keeps the value absent/partial rather than fabricating it.
 - Docker configuration is provided. Docker runtime validation could not be performed in the available environment because Docker was not installed.
+
+## Verification record
+
+Last verified locally with Python 3.13.11 in a clean `.venv`:
+
+- Test collection: 13 tests collected
+- Test suite: 13 passed
+- Compile check: passed
+- Ruff lint: passed
+- Ruff format check: passed
+- Dataset validation: 1,174,930 total, 1,174,930 valid, 0 invalid, 0 duplicates
+- Benchmark: 1,000 processed, 1,000 complete, 0 partial, 0 failed, 84 fact-bearing, 916 zero-fact, 100% evidence coverage
+- Benchmark diagnostics: all 916 zero-fact records were classified as `no_verified_facts_after_source_research`
+- CLI help: passed
+- Docker Compose validation/runtime: not run because Docker is unavailable
+- Redis/PostgreSQL service validation: not run because the required local service/runtime tools are unavailable
+
+The verified checks above do not imply production completion of unavailable Docker/Redis/PostgreSQL paths or live external source integrations.
