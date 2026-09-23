@@ -138,7 +138,6 @@ class CompanyEvent(Base):
     company: Mapped[Company] = relationship(back_populates="events")
 
 
-
 CompanyRecord = Company
 Evidence = EvidenceRecord
 Event = CompanyEvent

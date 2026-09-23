@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from ..agents.coordinator import ResearchCoordinator
 from ..graph.state import ResearchState
@@ -12,8 +12,8 @@ class ResearchGraph:
 
     async def execute(self, company_number: str) -> ResearchState:
         state = await self.coordinator.research(company_number)
-        state.setdefault("started_at", datetime.now(timezone.utc))
-        state.setdefault("finished_at", datetime.now(timezone.utc))
+        state.setdefault("started_at", datetime.now(UTC))
+        state.setdefault("finished_at", datetime.now(UTC))
         return state
 
 

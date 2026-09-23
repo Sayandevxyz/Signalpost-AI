@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -42,7 +40,9 @@ def response_for(state: dict, run_id: int | str | None = None) -> dict:
         },
         "research": {
             "run_id": run_id or state.get("run_id"),
-            "status": "failed" if errors and not state.get("company_identity") else ("partial" if errors else "complete"),
+            "status": "failed"
+            if errors and not state.get("company_identity")
+            else ("partial" if errors else "complete"),
             "errors": errors,
             "request_count": state.get("request_count", 0),
             "search_count": state.get("search_count", 0),
@@ -72,27 +72,56 @@ def response_from_database(run: ResearchRun, db: Session) -> dict:
         if fact.is_current
     ]
     events = [
-        {"event_type": event.event_type, "title": event.title, "description": event.description, "source_url": event.source_url}
+        {
+            "event_type": event.event_type,
+            "title": event.title,
+            "description": event.description,
+            "source_url": event.source_url,
+        }
         for event in company.events
     ]
     return {
-        "company": {"company_number": company.company_number, "legal_name": company.legal_name, "status": company.status, "website": company.website, "address": company.address, "city": company.city, "country": company.country},
+        "company": {
+            "company_number": company.company_number,
+            "legal_name": company.legal_name,
+            "status": company.status,
+            "website": company.website,
+            "address": company.address,
+            "city": company.city,
+            "country": company.country,
+        },
         "facts": facts,
         "events": events,
-        "verification": {"identity": True, "evidence": all(bool(fact["evidence"]) for fact in facts)},
-        "research": {"run_id": run.id, "status": run.status, "errors": run.error_message.splitlines() if run.error_message else [], "request_count": run.request_count, "search_count": run.search_count, "estimated_cost": run.estimated_cost, "started_at": run.started_at, "finished_at": run.finished_at},
+        "verification": {
+            "identity": True,
+            "evidence": all(bool(fact["evidence"]) for fact in facts),
+        },
+        "research": {
+            "run_id": run.id,
+            "status": run.status,
+            "errors": run.error_message.splitlines() if run.error_message else [],
+            "request_count": run.request_count,
+            "search_count": run.search_count,
+            "estimated_cost": run.estimated_cost,
+            "started_at": run.started_at,
+            "finished_at": run.finished_at,
+        },
     }
 
 
 @app.get("/")
 async def root() -> dict:
-    return {"name": "Signalpost AI", "tagline": "Evidence-first company intelligence for Norwegian businesses.", "docs": "/docs"}
+    return {
+        "name": "Signalpost AI",
+        "tagline": "Evidence-first company intelligence for Norwegian businesses.",
+        "docs": "/docs",
+    }
 
 
 @app.get("/health")
-async def health(db: Session = Depends(get_db)) -> dict:
+async def health(db: Session = Depends(get_db)) -> dict:  # noqa: B008
     db.execute(__import__("sqlalchemy").text("SELECT 1"))
-    return {"status": "ok", "database": "ok", "timestamp": datetime.now(timezone.utc)}
+    return {"status": "ok"}
 
 
 @app.post("/research")
@@ -106,15 +135,19 @@ async def research(request: ResearchRequest) -> dict:
 
 
 @app.get("/research/{run_id}")
-async def get_research(run_id: int, db: Session = Depends(get_db)) -> dict:
-    run = get_run(db, run_id)
+async def get_research(run_id: str, db: Session = Depends(get_db)) -> dict:  # noqa: B008
+    try:
+        numeric_run_id = int(run_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Research run not found") from None
+    run = get_run(db, numeric_run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="Research run not found")
     return response_from_database(run, db)
 
 
 @app.get("/companies/{company_number}")
-async def get_company_profile(company_number: str, db: Session = Depends(get_db)) -> dict:
+async def get_company_profile(company_number: str, db: Session = Depends(get_db)) -> dict:  # noqa: B008
     try:
         number = normalize_registration_number(company_number)
     except ValueError as exc:
@@ -122,4 +155,12 @@ async def get_company_profile(company_number: str, db: Session = Depends(get_db)
     company = get_company(db, number)
     if company is None:
         raise HTTPException(status_code=404, detail="Company not found")
-    return response_from_database(company.research_runs[-1], db) if getattr(company, "research_runs", None) else {"company": {"company_number": company.company_number, "legal_name": company.legal_name}, "facts": [], "events": []}
+    return (
+        response_from_database(company.research_runs[-1], db)
+        if getattr(company, "research_runs", None)
+        else {
+            "company": {"company_number": company.company_number, "legal_name": company.legal_name},
+            "facts": [],
+            "events": [],
+        }
+    )

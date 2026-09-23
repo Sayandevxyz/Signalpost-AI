@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from ..extraction.fact_extractor import FactExtractor
@@ -68,7 +68,7 @@ class RegistryAgent:
                     {
                         "url": item["url"],
                         "content": payload,
-                        "retrieved_at": datetime.now(timezone.utc).isoformat(),
+                        "retrieved_at": datetime.now(UTC).isoformat(),
                         "source": self.source.name,
                     }
                 )

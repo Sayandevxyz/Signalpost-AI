@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from ..sources.website import WebsiteSource
@@ -33,7 +33,7 @@ class WebsiteAgent:
                             "url": search_result["url"],
                             "title": search_result.get("title"),
                             "content": extracted,
-                            "retrieved_at": datetime.now(timezone.utc).isoformat(),
+                            "retrieved_at": datetime.now(UTC).isoformat(),
                         }
                     )
 

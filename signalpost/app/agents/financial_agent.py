@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from ..extraction.fact_extractor import FactExtractor
@@ -31,7 +31,7 @@ class FinancialAgent:
                             "url": search_result["url"],
                             "source": search_result.get("source"),
                             "content": extracted,
-                            "retrieved_at": datetime.now(timezone.utc).isoformat(),
+                            "retrieved_at": datetime.now(UTC).isoformat(),
                         }
                     )
 
